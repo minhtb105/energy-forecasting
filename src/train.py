@@ -48,6 +48,6 @@ for n in sample_sizes:
     # log results
     for model_name, model in model_dict.items():
         y_pred_val = model.predict(X_val_sample)
-        metrics = evaluate(y_val_sample, y_pred_val)
+        metrics = evaluate(y_val_sample, y_pred_val, X_val_sample.shape[1])
         params = {"num_train_samples": len(X_tr_sample), "num_val_samples": len(X_val_sample)}
         log_model_results(model_name, model, metrics, params)
