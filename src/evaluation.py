@@ -1,4 +1,4 @@
-from sklearn.metrics import mean_squared_error, root_mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
 def evaluate(y_true, y_pred, n_features=None):
     rmse = root_mean_squared_error(y_true, y_pred)
