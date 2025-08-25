@@ -24,7 +24,7 @@ test_df = add_cyclical_time_features(test_df)
 train_df, test_df = encode_season(train_df, test_df)
 
 y_train = train_df["load"]
-X_train = train_df.drop(["load"], axis=1)
+X_train = train_df.drop(["load", "date_time"], axis=1)
 
 X_tr, X_val, y_tr, y_val = train_test_split(
     X_train, y_train, test_size=0.2, shuffle=False
