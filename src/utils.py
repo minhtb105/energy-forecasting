@@ -40,8 +40,6 @@ def add_cyclical_time_features(df: pd.DataFrame, keep_original: bool = True) -> 
     out["month_cos"] = np.cos(2 * np.pi * mon0 / 12)
 
     if not keep_original:
-        out = out.drop(columns=["hour", "day_of_week", "month"])
-
-    out.drop(["hour", "month", "day_of_week"], axis=1)
+        out = out.drop(columns=["hour", "day_of_week", "month"], axis=1)
 
     return out
