@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import RobustScaler
 from data_prep import load_data, encode_season
 from utils import add_cyclical_time_features, add_calendar_features
 from models import run_lazy_regressor
@@ -34,7 +34,7 @@ X_tr, X_val, y_tr, y_val = train_test_split(
 scale_cols = ["proxy_temp", "CDD", "HDD", "lag_1", "lag_24", "lag_168", 
     "roll_mean_24", "roll_mean_168"]
 
-scaler = StandardScaler()
+scaler = RobustScaler()
 
 X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
 X_val[scale_cols] = scaler.transform(X_val[scale_cols])
