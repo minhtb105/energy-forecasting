@@ -38,7 +38,6 @@ scaler = StandardScaler()
 
 X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
 X_val[scale_cols] = scaler.transform(X_val[scale_cols])
-test_df[scale_cols] = scaler.transform(test_df[scale_cols])
 
 sample_sizes = [5000, 10000, 20000, 40000]
 
