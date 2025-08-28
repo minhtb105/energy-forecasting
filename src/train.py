@@ -34,6 +34,8 @@ X_tr, X_val, y_tr, y_val = train_test_split(
 scale_cols = ["proxy_temp", "CDD", "HDD", "lag_1", "lag_24", "lag_168", 
     "roll_mean_24", "roll_mean_168"]
 
+scaler = StandardScaler()
+
 X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
 X_val[scale_cols] = scaler.transform(X_val[scale_cols])
 test_df[scale_cols] = scaler.transform(test_df[scale_cols])
