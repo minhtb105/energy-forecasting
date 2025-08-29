@@ -32,29 +32,32 @@ tscl = TimeSeriesSplit()
 scale_cols = ["proxy_temp", "CDD", "HDD", "lag_1", "lag_24", "lag_168", 
     "roll_mean_24", "roll_mean_168"]
 
-scaler = RobustScaler()
+for fold, (train_idx, test_idx) in enumerate(tscl.split(X_train)):
+    X_tr, X_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
+    y_tr, y_val = y_train.iloc[train_idx], y_train.iloc[val_idx]
 
-X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
-X_val[scale_cols] = scaler.transform(X_val[scale_cols])
+    scaler = RobustScaler()
 
-sample_sizes = [10000, 20000, 40000]
+    X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
+    X_val[scale_cols] = scaler.transform(X_val[scale_cols])
 
-for n in sample_sizes:
-    # Lấy sample từ train/val
-    X_tr_sample = X_tr.sample(n=n, random_state=42)
-    y_tr_sample = y_tr.loc[X_tr_sample.index]
+    sample_sizes = [10000, 20000, 40000]
 
-    X_val_sample = X_val.sample(n=2000, random_state=42)
-    y_val_sample = y_val.loc[X_val_sample.index]
+    for n in sample_sizes:
+        X_tr_sample = X_tr.iloc[:n] if len(X_tr) >= n else X_tr.copy()
+        y_tr_sample = y_tr.loc[X_tr_sample.index]
 
-    # run LazyRegressor
-    models, predictions, model_dict = run_lazy_regressor(X_tr_sample, 
-                                                        X_val_sample, 
-                                                        y_tr_sample, y_val_sample)
+        X_val_sample = X_val.iloc[:2000] if len(X_val) >= 2000 else X_val.copy()
+        y_val_sample = y_val.loc[X_val_sample.index]
 
-    # log results
-    for model_name, model in model_dict.items():
-        y_pred_val = model.predict(X_val_sample)
-        metrics = evaluate(y_val_sample, y_pred_val, X_val_sample.shape[1])
-        params = {"num_train_samples": len(X_tr_sample), "num_val_samples": len(X_val_sample)}
-        log_model_results(model_name, model, metrics, params)
+        # run LazyRegressor
+        models, predictions, model_dict = run_lazy_regressor(X_tr_sample, 
+                                                            X_val_sample, 
+                                                            y_tr_sample, y_val_sample)
+
+        # log results
+        for model_name, model in model_dict.items():
+            y_pred_val = model.predict(X_val_sample)
+            metrics = evaluate(y_val_sample, y_pred_val, X_val_sample.shape[1])
+            params = {"num_train_samples": len(X_tr_sample), "num_val_samples": len(X_val_sample)}
+            log_model_results(model_name, model, metrics, params)
