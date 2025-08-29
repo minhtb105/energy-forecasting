@@ -32,7 +32,7 @@ tscl = TimeSeriesSplit()
 scale_cols = ["proxy_temp", "CDD", "HDD", "lag_1", "lag_24", "lag_168", 
     "roll_mean_24", "roll_mean_168"]
 
-for fold, (train_idx, test_idx) in enumerate(tscl.split(X_train)):
+for fold, (train_idx, val_idx) in enumerate(tscl.split(X_train)):
     X_tr, X_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
     y_tr, y_val = y_train.iloc[train_idx], y_train.iloc[val_idx]
 
