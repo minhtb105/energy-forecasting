@@ -41,7 +41,7 @@ for fold, (train_idx, val_idx) in enumerate(tscl.split(X_train)):
     X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
     X_val[scale_cols] = scaler.transform(X_val[scale_cols])
 
-    sample_sizes = [10000, 20000, 40000]
+    sample_sizes = [40000]
 
     for n in sample_sizes:
         X_tr_sample = X_tr.iloc[:n] if len(X_tr) >= n else X_tr.copy()
@@ -55,9 +55,18 @@ for fold, (train_idx, val_idx) in enumerate(tscl.split(X_train)):
                                                             X_val_sample, 
                                                             y_tr_sample, y_val_sample)
 
-        # log results
+        metrics_dict = {}
         for model_name, model in model_dict.items():
             y_pred_val = model.predict(X_val_sample)
             metrics = evaluate(y_val_sample, y_pred_val, X_val_sample.shape[1])
-            params = {"num_train_samples": len(X_tr_sample), "num_val_samples": len(X_val_sample)}
-            log_model_results(model_name, model, metrics, params)
+            metrics_dict[model_name] = metrics
+
+        best_model_name = min(metrics_dict, key=lambda k: metrics_dict[k]["rmse"])
+        best_models.append((fold, n, best_model_name, metrics_dict[best_model_name]))
+        
+        # log best model only
+        log_model_results(f"{best_model_name}_fold{fold}_n{n}", 
+                          model_dict[best_model_name], 
+                          metrics_dict[best_model_name], 
+                          {"num_train_samples": n, "num_val_samples": len(X_val_sample)})
+        
