@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import RobustScaler
 from data_prep import load_data, encode_season
 from utils import add_cyclical_time_features, add_calendar_features
@@ -27,9 +27,7 @@ train_df, test_df = encode_season(train_df, test_df)
 y_train = train_df["load"]
 X_train = train_df.drop(["load", "date_time"], axis=1)
 
-X_tr, X_val, y_tr, y_val = train_test_split(
-    X_train, y_train, test_size=0.2, shuffle=False
-)
+tscl = TimeSeriesSplit()
 
 scale_cols = ["proxy_temp", "CDD", "HDD", "lag_1", "lag_24", "lag_168", 
     "roll_mean_24", "roll_mean_168"]
@@ -39,7 +37,7 @@ scaler = RobustScaler()
 X_tr[scale_cols] = scaler.fit_transform(X_tr[scale_cols])
 X_val[scale_cols] = scaler.transform(X_val[scale_cols])
 
-sample_sizes = [5000, 10000, 20000, 40000]
+sample_sizes = [10000, 20000, 40000]
 
 for n in sample_sizes:
     # Lấy sample từ train/val
